@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "firechat-d076f": {
+      "hosting": {
+        "FireChat": [
+          "firechat-d076f"
+        ]
+      }
+    }
+  }
+}
