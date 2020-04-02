@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Mensaje } from '../interfaces/mensaje.interface';
 import { map } from 'rxjs/operators';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { auth } from 'firebase/app';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,28 @@ import { map } from 'rxjs/operators';
 export class ChatService {
   private itemsCollection: AngularFirestoreCollection<Mensaje>;
   public chats: Mensaje[] = [];
-  constructor(private afs: AngularFirestore) {
+  public usuario: any = {};
+  constructor(private afs: AngularFirestore,
+              public authfs: AngularFireAuth) {
+    this.authfs.authState.subscribe(user => {
+      console.log('ESTADO DEL USUARIO', user);
+      if (!user) {
+        return;
+      }
+      this.usuario.nombre = user.displayName;
+      this.usuario.uid = user.uid;
+    });
+  }
+
+  login(proveedor: string) {
+    if (proveedor === 'google') {
+      this.authfs.signInWithPopup(new auth.GoogleAuthProvider());
+    } else if (proveedor === 'twitter') {
+      this.authfs.signInWithPopup(new auth.TwitterAuthProvider());
+    }
+  }
+  logout() {
+    this.authfs.signOut();
   }
 
   cargarMensajes() {
@@ -35,4 +58,6 @@ export class ChatService {
 
     return this.itemsCollection.add(mensaje);
   }
+
+  
 }
