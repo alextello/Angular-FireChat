@@ -13,11 +13,14 @@ export class ChatService {
   }
 
   cargarMensajes() {
-    this.itemsCollection = this.afs.collection<Mensaje>('chats');
+    this.itemsCollection = this.afs.collection<Mensaje>('chats', ref => ref.orderBy('fecha', 'desc').limit(5));
     return this.itemsCollection.valueChanges()
                 .pipe(
-                  map( mensajes => {
-                    this.chats = mensajes;
+                  map( (mensajes: Mensaje[]) => {
+                    this.chats = [];
+                    for (const mensaje of mensajes) {
+                      this.chats.unshift(mensaje);
+                    }
                   })
                 );
   }
